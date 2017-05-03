@@ -115,7 +115,9 @@ def run_goal(args):
   pants(pants_args)
 
 
-@app.command_option("--coverage", dest="coverage", default=False, help="Python test coverage.")
+@app.command_option(
+  "--coverage", action="store_true", dest="coverage", default=False, help="Python test coverage.",
+)
 @app.command(name="test")
 def test_goal(args, options):
   """
