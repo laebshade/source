@@ -59,6 +59,23 @@ def pants(args):
   return _pants
 
 
+def pants_list(args):
+  """
+  Non-interactive output of pants list parsed to only show bare targets without paths.
+
+  :param args: arguments to pass to sarge.
+  :type args: str
+  :returns: _pants
+  """
+  os.chdir(git_toplevel())
+  _pants_list = capture_stdout("./pants %s" % args)
+
+  for target in _pants_list.stdout.text.split("\n"):
+    if ":" in target:
+      bare_target = target.split(":", 1)[-1]
+      print(":%s" % bare_target)
+
+
 @app.command(name="binary")
 def binary_goal(args):
   """
@@ -78,10 +95,9 @@ def binary_goal(args):
 def list_goal():
   """List relative path pants targets."""
   path = rel_cwd()
-  awk_args = shell_format("{0}", '/:/{print ":"$NF}')
-  pants_args = "list {0} | awk -F: {1}".format(path, awk_args)
+  pants_args = "list {0}:".format(path)
 
-  pants(pants_args)
+  pants_list(pants_args)
 
 
 @app.command(name="repl")
