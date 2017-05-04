@@ -1,6 +1,8 @@
 """Chaps, a relative dir pants wrapper for Python targets."""
 # pylint: disable=E0401
 
+from __future__ import absolute_import, print_function
+
 import os
 
 from twitter.common import app, log
@@ -46,7 +48,7 @@ def pants(args):
   """
   Grab the top level dir from git command, chdir and execute ./pants with given args.
 
-  :param args: arguments to pass to subprocess.
+  :param args: arguments to pass to sarge.
   :type args: str
   :returns: _pants
   :rtype: sarge `obj`
