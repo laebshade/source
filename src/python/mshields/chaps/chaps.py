@@ -7,7 +7,7 @@ import os
 
 from twitter.common import app, log
 
-from sarge import capture_stdout, run, shell_format
+from sarge import capture_stdout, run
 
 
 log.LogOptions().disable_disk_logging()
@@ -154,4 +154,5 @@ def test_goal(args, options):
 
 
 app.add_option("--quiet", "-q", default=False)
+app.set_usage("chaps [goal]")
 app.main()
