@@ -1,4 +1,33 @@
-"""Chaps, a relative dir pants wrapper for Python targets."""
+"""
+Chaps, a relative dir pants wrapper for Python targets.
+
+Chaps makes it easier to interact with your Pants Build System without having
+to type out lengthy path names.
+
+Let's say you're in your project dir and want to build a binary. So you:
+
+  $ cd ~/workspace/source ; ./pants binary path/to/target:target
+
+That's just a pain.  This is where chaps comes in:
+
+  $ chaps binary :target
+
+How about just running your code?  We have you covered:
+
+  $ chaps run :target -- args
+
+Interested in dropping into an iPython REPL?  You're golden:
+
+  $ chaps repl :target
+
+Working in your tests directory and want to run tests?   Chaps has a shortcut for
+that, too:
+
+  $ chaps test :target
+
+Note: chaps only works with targets in your current work directory (cwd).  Fall
+back to calling pants directly if you need something else.
+"""
 # pylint: disable=E0401
 
 from __future__ import absolute_import, print_function
