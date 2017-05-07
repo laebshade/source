@@ -1,10 +1,12 @@
 """Chaps tests."""
 # pylint: disable=E0401
 
+import mock
 
-def test_git_toplevel(mocker):
+
+def test_git_toplevel():
   """Test git_toplevel function."""
-  git_toplevel = mocker.Mock()
+  git_toplevel = mock.Mock()
 
   git_toplevel.return_value = "/home/repos/source"
   assert git_toplevel() == "/home/repos/source"
