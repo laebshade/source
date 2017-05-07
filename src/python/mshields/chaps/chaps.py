@@ -28,7 +28,7 @@ that, too:
 Note: chaps only works with targets in your current work directory (cwd).  Fall
 back to calling pants directly if you need something else.
 """
-# pylint: disable=E0401
+# pylint: disable=import-error
 
 from __future__ import absolute_import, print_function
 
