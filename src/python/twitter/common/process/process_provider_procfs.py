@@ -1,7 +1,7 @@
 import os
 
-from twitter.common.process.process_handle_procfs import ProcessHandleProcfs
-from twitter.common.process.process_provider import ProcessProvider
+from .process_handle_procfs import ProcessHandleProcfs
+from .process_provider import ProcessProvider
 
 def filter_map(fn, lst):
   return filter(lambda return_value: return_value is not None, map(fn, lst))

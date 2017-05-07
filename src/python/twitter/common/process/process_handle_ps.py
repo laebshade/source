@@ -1,6 +1,6 @@
 import os
 import subprocess
-from twitter.common.process.process_handle import ProcessHandle, ProcessHandleParserBase
+from process_handle import ProcessHandle, ProcessHandleParserBase
 
 class ProcessHandlersPs(object):
   @staticmethod
