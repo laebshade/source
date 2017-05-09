@@ -28,7 +28,7 @@ that, too:
 Note: chaps only works with targets in your current work directory (cwd).  Fall
 back to calling pants directly if you need something else.
 """
-# pylint: disable=import-error
+# pylint: disable=E0401,E0611,E1101
 
 from __future__ import absolute_import, print_function
 
@@ -163,7 +163,17 @@ def run_goal(args):
 
 
 @app.command_option(
+  "--all", action="store_true", dest="all", default=False,
+  help="Test all targets in path name simliar to cwd.",
+)
+@app.command_option(
   "--coverage", action="store_true", dest="coverage", default=False, help="Python test coverage.",
+)
+@app.command_option(
+  "--failfast", action="store_true", default=False, help="Python stop on first error.",
+)
+@app.command_option(
+  "--verbose", action="store", default=0, help="Python test verbosity.",
 )
 @app.command(name="test")
 def test_goal(args, options):
@@ -175,10 +185,33 @@ def test_goal(args, options):
   :param options: twitter.common.app options.
   :param type: obj
   """
-  _targets = targets(rel_cwd(), args)
+  if options.all:
+    _targets = "%s::" % rel_cwd().replace('src', 'tests')
+  else:
+    _targets = targets(rel_cwd(), args)
+
   log.debug("chaps targets: %s", _targets)
 
-  pants_args = "test.pytest  {0} {1}".format("--coverage=%d" % int(options.coverage), _targets)
+  def options_flags():
+    """Generate pytest_options flags."""
+    flags = []
+
+    if options.verbose:
+      verbosity = int(options.verbose)
+      flags.append("%s" % "".join(["v" for _ in range(verbosity)]))
+    elif options.failfast:
+      flags.append("xvv")
+
+    if flags:
+      return "-%s" % "".join(flags)
+    else:
+      return ""
+
+
+  pants_args = "test.pytest  {0} {1} {2}".format(
+    "--coverage=%d" % int(options.coverage),
+    "--test-pytest-options='%s'" % options_flags(), _targets
+  )
   pants(pants_args)
 
 
