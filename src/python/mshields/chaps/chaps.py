@@ -25,6 +25,10 @@ that, too:
 
   $ chaps test :target
 
+If you're looking to resolve formatting issues, look no more for the fmt goal;:
+
+  $ chaps fmt :target
+
 Note: chaps only works with targets in your current work directory (cwd).  Fall
 back to calling pants directly if you need something else.
 """
@@ -34,10 +38,8 @@ from __future__ import absolute_import, print_function
 
 import os
 
-from twitter.common import app, log
-
 from sarge import capture_stdout, run
-
+from twitter.common import app, log
 
 log.LogOptions().disable_disk_logging()
 
@@ -117,6 +119,21 @@ def binary_goal(args):
   log.debug("chaps targets: %s", _targets)
 
   pants_args = "binary {0}".format(_targets)
+  pants(pants_args)
+
+
+@app.command(name="fmt")
+def fmt_goal(args):
+  """
+  Fix common format issues using pants fmt goal.
+
+  :param args: relative targets.
+  :param type: list `str`.
+  """
+  _targets = targets(rel_cwd(), args)
+  log.debug("chaps targets: %s", _targets)
+
+  pants_args = "fmt {0}".format(_targets)
   pants(pants_args)
 
 
