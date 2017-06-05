@@ -36,147 +36,82 @@ back to calling pants directly if you need something else.
 
 from __future__ import absolute_import, print_function
 
-import os
-
-from sarge import capture_stdout, run
 from twitter.common import app, log
+from mshields.chaps import lib
 
 log.LogOptions().disable_disk_logging()
 
 
-def git_toplevel():
-  """
-  Grab absolute path of repo using git command.
-
-  :returns: git.stdout.text.rstrip()
-  :rtype: str.
-  """
-  git = capture_stdout("git rev-parse --show-toplevel")
-  return git.stdout.text.rstrip()
-
-
-def rel_cwd():
-  """
-  Given the cwd and git_toplevel result, constructs the relative path difference.
-
-  :returns: os.path.relpath
-  :rtype: str.
-  """
-  return os.path.relpath(os.getcwd(), git_toplevel())
-
-
-def targets(path, args):
-  """
-  Assembles Fully Qualified Pants Targets (FQPT).
-
-  :returns: space-delimited FQPT targets.
-  :rtype: str.
-  """
-  return " ".join(["{0}{1}".format(path, target) for target in args])
-
-
-def pants(args):
-  """
-  Grab the top level dir from git command, chdir and execute ./pants with given args.
-
-  :param args: arguments to pass to sarge.
-  :type args: str
-  :returns: _pants
-  :rtype: sarge `obj`
-  """
-  os.chdir(git_toplevel())
-  _pants = run("./pants %s" % args)
-
-  return _pants
-
-
-def pants_list(args):
-  """
-  Non-interactive output of pants list parsed to only show bare targets without paths.
-
-  :param args: arguments to pass to sarge.
-  :type args: str
-  :returns: _pants
-  """
-  os.chdir(git_toplevel())
-  _pants_list = capture_stdout("./pants %s" % args)
-
-  for target in _pants_list.stdout.text.split("\n"):
-    if ":" in target:
-      bare_target = target.split(":", 1)[-1]
-      print(":%s" % bare_target)
-
-
 @app.command(name="binary")
 def binary_goal(args):
-  """
-  Create a binary using pants.
+  """Create a binary using pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
-  _targets = targets(rel_cwd(), args)
-  log.debug("chaps targets: %s", _targets)
+  targets = lib.targets(lib.rel_cwd(), args)
 
-  pants_args = "binary {0}".format(_targets)
-  pants(pants_args)
+  if targets is None:
+    app.error("No target given.")
+
+  log.debug("chaps targets: %s", targets)
+
+  pants_args = "binary {0}".format(targets)
+  lib.pants(pants_args)
 
 
 @app.command(name="fmt")
 def fmt_goal(args):
-  """
-  Fix common format issues using pants fmt goal.
+  """Fix common format issues using pants fmt goal."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
-  _targets = targets(rel_cwd(), args)
-  log.debug("chaps targets: %s", _targets)
+  targets = lib.targets(lib.rel_cwd(), args)
 
-  pants_args = "fmt {0}".format(_targets)
-  pants(pants_args)
+  if targets is None:
+    app.error("No target given.")
+
+  log.debug("chaps targets: %s", targets)
+
+  pants_args = "fmt {0}".format(targets)
+  lib.pants(pants_args)
 
 
 @app.command(name="list")
 def list_goal():
   """List relative path pants targets."""
-  path = rel_cwd()
+  path = lib.rel_cwd()
   pants_args = "list {0}:".format(path)
 
-  pants_list(pants_args)
+  lib.pants_list(pants_args)
 
 
 @app.command(name="repl")
 def repl_goal(args):
-  """
-  Enter an ipython REPL.
+  """Enter an ipython REPL."""
 
-  :param args: relative targets.
-  :type args: list `str`.
-  """
-  _targets = targets(rel_cwd(), args)
-  log.debug("chaps targets: %s", _targets)
+  targets = lib.targets(lib.rel_cwd(), args)
 
-  pants_args = "repl --repl-py-ipython {0}".format(_targets)
-  pants(pants_args)
+  if targets is None:
+    app.error("No target given.")
+
+  log.debug("chaps targets: %s", targets)
+
+  pants_args = "repl --repl-py-ipython {0}".format(targets)
+  lib.pants(pants_args)
 
 
 @app.command(name="run")
 def run_goal(args):
-  """
-  Run a target using pants.
+  """Run a target using pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
   single_target = args[0]
-  _targets = targets(rel_cwd(), [single_target])
+  targets = lib.targets(lib.rel_cwd(), [single_target])
+
+  if targets is None:
+    app.error("No target given.")
+
   run_args = " ".join(args[1:])
 
-  log.debug("chaps targets: %s", _targets)
+  log.debug("chaps targets: %s", targets)
 
-  pants_args = "run {0} {1}".format(_targets, run_args)
-  pants(pants_args)
+  pants_args = "run {0} {1}".format(targets, run_args)
+  lib.pants(pants_args)
 
 
 @app.command_option(
@@ -190,48 +125,26 @@ def run_goal(args):
   "--failfast", action="store_true", default=False, help="Python stop on first error.",
 )
 @app.command_option(
-  "--verbose", action="store", default=0, help="Python test verbosity.",
+  "--verbose", action="store_true", default=False, help="Python test verbosity.",
 )
 @app.command(name="test")
 def test_goal(args, options):
-  """
-  Use test.pytest goal with pants.
+  """Use test.pytest goal with pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  :param options: twitter.common.app options.
-  :param type: obj
-  """
   if options.all:
-    _targets = "%s::" % rel_cwd().replace('src', 'tests')
+    targets = "%s::" % lib.rel_cwd().replace('src', 'tests')
   else:
-    _targets = targets(rel_cwd(), args)
+    targets = targets(lib.rel_cwd(), args)
 
-  log.debug("chaps targets: %s", _targets)
-
-  def options_flags():
-    """Generate pytest_options flags."""
-    flags = []
-
-    if options.verbose:
-      verbosity = int(options.verbose)
-      flags.append("%s" % "".join(["v" for _ in range(verbosity)]))
-    elif options.failfast:
-      flags.append("xvv")
-
-    if flags:
-      return "-%s" % "".join(flags)
-    else:
-      return ""
-
+  log.debug("chaps targets: %s", targets)
 
   pants_args = "test.pytest  {0} {1} {2}".format(
     "--coverage=%d" % int(options.coverage),
-    "--test-pytest-options='%s'" % options_flags(), _targets
+    "--test-pytest-options='%s'" % lib.pytest_options(options),
+    targets,
   )
-  pants(pants_args)
+  lib.pants(pants_args)
 
 
-app.add_option("--quiet", "-q", default=False)
-app.set_usage("chaps [goal]")
+app.set_usage_based_on_commands()
 app.main()
