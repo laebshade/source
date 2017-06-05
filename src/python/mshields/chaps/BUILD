@@ -1,7 +1,18 @@
 python_binary(
-  source='chaps.py',
+  name="chaps",
+  source="chaps.py",
   dependencies=[
-    'src/python/twitter/common/app',
-    '3rdparty/python:sarge',
+    ":lib",
+    "src/python/twitter/common/app",
+    "src/python/twitter/common/log",
+    "3rdparty/python:sarge",
+  ],
+)
+
+python_library(
+  name="lib",
+  sources=["lib.py"],
+  dependencies=[
+    "3rdparty/python:sarge",
   ],
 )
