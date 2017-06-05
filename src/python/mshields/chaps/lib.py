@@ -36,7 +36,8 @@ def targets(path, args):
   :returns: space-delimited FQPT targets.
   :rtype: str.
   """
-  return " ".join(["{0}{1}".format(path, target) for target in args])
+  if args:
+    return " ".join(["{0}{1}".format(path, target) for target in args])
 
 
 def pants(args):
@@ -45,13 +46,11 @@ def pants(args):
 
   :param args: arguments to pass to sarge.
   :type args: str
-  :returns: _pants
-  :rtype: sarge `obj`
+  :returns: None or sarge.run
+  :rtype: sarge.run `obj`
   """
   os.chdir(git_toplevel())
-  _pants = run("./pants %s" % args)
-
-  return _pants
+  return run("./pants %s" % args) if args is not None else None
 
 
 def pants_list(args):
@@ -96,5 +95,3 @@ def app_usage(commands_and_docstrings):
   :returns: _app_usage
   :rtype: str
   """
-  "\n".join([
-    "    %-22%s" % (command, 

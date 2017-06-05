@@ -44,13 +44,13 @@ log.LogOptions().disable_disk_logging()
 
 @app.command(name="binary")
 def binary_goal(args):
-  """
-  Create a binary using pants.
+  """Create a binary using pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
   targets = lib.targets(lib.rel_cwd(), args)
+
+  if targets is None:
+    app.error("No target given.")
+
   log.debug("chaps targets: %s", targets)
 
   pants_args = "binary {0}".format(targets)
@@ -59,13 +59,13 @@ def binary_goal(args):
 
 @app.command(name="fmt")
 def fmt_goal(args):
-  """
-  Fix common format issues using pants fmt goal.
+  """Fix common format issues using pants fmt goal."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
   targets = lib.targets(lib.rel_cwd(), args)
+
+  if targets is None:
+    app.error("No target given.")
+
   log.debug("chaps targets: %s", targets)
 
   pants_args = "fmt {0}".format(targets)
@@ -83,13 +83,13 @@ def list_goal():
 
 @app.command(name="repl")
 def repl_goal(args):
-  """
-  Enter an ipython REPL.
+  """Enter an ipython REPL."""
 
-  :param args: relative targets.
-  :type args: list `str`.
-  """
   targets = lib.targets(lib.rel_cwd(), args)
+
+  if targets is None:
+    app.error("No target given.")
+
   log.debug("chaps targets: %s", targets)
 
   pants_args = "repl --repl-py-ipython {0}".format(targets)
@@ -98,14 +98,14 @@ def repl_goal(args):
 
 @app.command(name="run")
 def run_goal(args):
-  """
-  Run a target using pants.
+  """Run a target using pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  """
   single_target = args[0]
   targets = lib.targets(lib.rel_cwd(), [single_target])
+
+  if targets is None:
+    app.error("No target given.")
+
   run_args = " ".join(args[1:])
 
   log.debug("chaps targets: %s", targets)
@@ -125,18 +125,12 @@ def run_goal(args):
   "--failfast", action="store_true", default=False, help="Python stop on first error.",
 )
 @app.command_option(
-  "--verbose", action="store", default=0, help="Python test verbosity.",
+  "--verbose", action="store_true", default=False, help="Python test verbosity.",
 )
 @app.command(name="test")
 def test_goal(args, options):
-  """
-  Use test.pytest goal with pants.
+  """Use test.pytest goal with pants."""
 
-  :param args: relative targets.
-  :param type: list `str`.
-  :param options: twitter.common.app options.
-  :param type: obj
-  """
   if options.all:
     targets = "%s::" % lib.rel_cwd().replace('src', 'tests')
   else:
@@ -152,6 +146,5 @@ def test_goal(args, options):
   lib.pants(pants_args)
 
 
-app.add_option("--quiet", "-q", default=False)
-app.set_usage("chaps goal\n\n%s" % lib.app_usage(app.get_commands_and_docstrings()))
+app.set_usage_based_on_commands()
 app.main()
