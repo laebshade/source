@@ -25,7 +25,7 @@ that, too:
 
   $ chaps test :target
 
-If you're looking to resolve formatting issues, look no more for the fmt goal;:
+If you're looking to resolve formatting issues, look no more for the fmt goal:
 
   $ chaps fmt :target
 
