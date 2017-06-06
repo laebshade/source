@@ -84,14 +84,3 @@ def pytest_options(options):
     return "-%s" % "".join(flags)
 
   return ""
-
-
-def app_usage(commands_and_docstrings):
-  """
-  Create an app usage string.
-
-  :param commands_and_docstrings: commands and docstrings from __doc__.
-  :param type: dict
-  :returns: _app_usage
-  :rtype: str
-  """
