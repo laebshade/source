@@ -134,7 +134,7 @@ def test_goal(args, options):
   if options.all:
     targets = "%s::" % lib.rel_cwd().replace('src', 'tests')
   else:
-    targets = targets(lib.rel_cwd(), args)
+    targets = lib.targets(lib.rel_cwd(), args)
 
   log.debug("chaps targets: %s", targets)
 
