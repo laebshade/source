@@ -25,7 +25,7 @@ that, too:
 
   $ chaps test :target
 
-If you're looking to resolve formatting issues, look no more for the fmt goal;:
+If you're looking to resolve formatting issues, look no more for the fmt goal:
 
   $ chaps fmt :target
 
@@ -134,7 +134,7 @@ def test_goal(args, options):
   if options.all:
     targets = "%s::" % lib.rel_cwd().replace('src', 'tests')
   else:
-    targets = targets(lib.rel_cwd(), args)
+    targets = lib.targets(lib.rel_cwd(), args)
 
   log.debug("chaps targets: %s", targets)
 
