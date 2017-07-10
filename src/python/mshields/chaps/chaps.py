@@ -130,7 +130,7 @@ def clean_goal(args):
 
 @app.command_option(
   "--all", action="store_true", dest="all", default=False,
-  help="Test all targets in path name simliar to cwd.",
+  help="Test all targets in path name similar to cwd.",
 )
 @app.command_option(
   "--coverage", action="store_true", dest="coverage", default=False, help="Python test coverage.",
