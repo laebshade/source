@@ -113,6 +113,15 @@ def run_goal(args):
   pants_args = "run {0} {1}".format(targets, run_args)
   lib.pants(pants_args)
 
+@app.command(name="clean")
+@app.command(name="clean-all")
+@app.command(name="wash")
+def clean_goal(args):
+  """Clean pants from anywhere in the tree."""
+
+  log.debug("chaps clean")
+  lib.pants("clean-all")
+
 
 @app.command_option(
   "--all", action="store_true", dest="all", default=False,
