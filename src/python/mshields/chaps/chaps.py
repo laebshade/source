@@ -29,6 +29,10 @@ If you're looking to resolve formatting issues, look no more for the fmt goal:
 
   $ chaps fmt :target
 
+If you need to clean up after Pants, try out the clean command:
+
+  $ chaps clean
+
 Note: chaps only works with targets in your current work directory (cwd).  Fall
 back to calling pants directly if you need something else.
 """
@@ -114,9 +118,19 @@ def run_goal(args):
   lib.pants(pants_args)
 
 
+@app.command(name="clean")
+@app.command(name="clean-all")
+@app.command(name="wash")
+def clean_goal(args):
+  """Clean pants."""
+
+  log.debug("chaps clean")
+  lib.pants("clean-all")
+
+
 @app.command_option(
   "--all", action="store_true", dest="all", default=False,
-  help="Test all targets in path name simliar to cwd.",
+  help="Test all targets in path name similar to cwd.",
 )
 @app.command_option(
   "--coverage", action="store_true", dest="coverage", default=False, help="Python test coverage.",
