@@ -1,12 +1,11 @@
 """Yet another Google Dynamic DNS updater."""
 # pylint: disable=import-error
 
-from twitter.common import app
-from twitter.common import log
-
 from yaml import safe_load
 
-from mshields.yagddns import lib
+from twitter.common import app
+from twitter.common import log
+from yagddns import lib
 
 
 def main(args):
