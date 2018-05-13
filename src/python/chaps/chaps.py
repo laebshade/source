@@ -40,8 +40,8 @@ back to calling pants directly if you need something else.
 
 from __future__ import absolute_import, print_function
 
+from chaps import lib
 from twitter.common import app, log
-from mshields.chaps import lib
 
 log.LogOptions().disable_disk_logging()
 
